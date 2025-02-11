@@ -1,5 +1,7 @@
 package com.arka.homework.projectArka.Pedido.Aplication.Service;
 
+import com.arka.homework.projectArka.Carrito.Aplication.Dto.CreateCarritoDto;
+import com.arka.homework.projectArka.Carrito.Domain.Entity.Carrito;
 import com.arka.homework.projectArka.Carrito.Domain.Repository.CarritoRepository;
 import com.arka.homework.projectArka.Cliente.Domain.Repository.ClienteRepository;
 import com.arka.homework.projectArka.Exception.GeneralException;
@@ -8,10 +10,12 @@ import com.arka.homework.projectArka.Pedido.Aplication.Dto.HistorialPedidosDto;
 import com.arka.homework.projectArka.Pedido.Domain.Entity.Enums.EstadoPedido;
 import com.arka.homework.projectArka.Pedido.Domain.Entity.Pedido;
 import com.arka.homework.projectArka.Pedido.Domain.Repository.PedidoRepository;
+import com.arka.homework.projectArka.Producto.Domain.Entity.Producto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -76,10 +80,10 @@ public class PedidoService {
     /**
      * Funcion para obtener los carritos o pedidos abandonados abandonados
      */
-    public List<Pedido> findByEstadoPedido(){
+    /*public List<Pedido> findByEstadoPedido(){
         List<Pedido> pedidoList = pedidoRepository.findByEstadoPedido(EstadoPedido.Abandonado);
         return pedidoList;
-    }
+    }*/
 
     /**
      * Funcion para buscar los pedidos en un rango de fecha
@@ -92,10 +96,36 @@ public class PedidoService {
     }
 
     public Pedido save(CreatePedidoDto createPedidoDto){
+        //primero valida si existe un carrito
+        Optional<Carrito> carritoOptional = carritoRepository.findById(createPedidoDto.getCarrito().getId());
+        //si existe asignemelo, sino lance un error
+        if (carritoOptional.isEmpty()){
+            throw new GeneralException(ID_NO_ENCONTRADO);
+        }
+
+        Carrito carrito = carritoOptional.get();
+
+        //Calcular el precio total de los productos en el carrito
+        BigDecimal salePrice = carrito.getCarritoProductos().stream()
+                .map(cp -> cp.getProducto().getPrice().multiply(BigDecimal.valueOf(cp.getAmount())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         Pedido pedido = new Pedido();
         BeanUtils.copyProperties(createPedidoDto,pedido);
+        pedido.setCarrito(carrito);
+
+        //Establecer el salePrice calculado
+        pedido.setSalePrice(salePrice);
+
+        //Asigna el id del pedido en el carrito
+        carrito.setPedido(pedido);
+
+        //Actualiza el carrito
+        carritoRepository.save(carrito);
+
         return pedidoRepository.save(pedido);
     }
+
 
     public void deleteById(Long id){
         pedidoRepository.deleteById(id);

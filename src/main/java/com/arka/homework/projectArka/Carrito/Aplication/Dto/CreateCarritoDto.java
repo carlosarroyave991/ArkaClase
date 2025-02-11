@@ -16,11 +16,21 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateCarritoDto {
 
+    Long id;
+
     CreateClienteDto cliente;
 
     List<CarritoProducto> carritoProductos;
 
     Pedido pedido;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public CreateClienteDto getCliente() {
         return cliente;

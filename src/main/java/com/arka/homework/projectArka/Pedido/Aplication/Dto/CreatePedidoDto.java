@@ -1,12 +1,7 @@
 package com.arka.homework.projectArka.Pedido.Aplication.Dto;
 
 import com.arka.homework.projectArka.Carrito.Aplication.Dto.CreateCarritoDto;
-import com.arka.homework.projectArka.Carrito.Domain.Entity.Carrito;
-import com.arka.homework.projectArka.Cliente.Aplication.Dto.CreateClienteDto;
-import com.arka.homework.projectArka.Cliente.Domain.Entity.Cliente;
 import com.arka.homework.projectArka.Pedido.Domain.Entity.Enums.EstadoPedido;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -63,12 +58,12 @@ public class CreatePedidoDto {
         this.estadoPedido = estadoPedido;
     }
 
-    public CreateCarritoDto getCarrito() {
-        return carrito;
-    }
-
     public void setCarrito(CreateCarritoDto carrito) {
         this.carrito = carrito;
+    }
+
+    public CreateCarritoDto getCarrito() {
+        return carrito;
     }
 
     public Long getReference() {

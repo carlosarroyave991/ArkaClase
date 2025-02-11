@@ -42,8 +42,8 @@ public class PedidoController {
      * Obtener carritos abandonados
      */
     @GetMapping("/historial-pedidos")
-    public ResponseEntity<List<Pedido>> obtenerPedidosAbandonados(){
-        return new ResponseEntity<>(pedidoService.findByEstadoPedido(), HttpStatus.OK);
+    public ResponseEntity<List<Pedido>> obtenerPedidosAbandonados(@RequestBody CreatePedidoDto createPedidoDto){
+        return new ResponseEntity<>(pedidoService.findByEstadoPedido(createPedidoDto.getEstadoPedido()), HttpStatus.OK);
     }
 
     /**

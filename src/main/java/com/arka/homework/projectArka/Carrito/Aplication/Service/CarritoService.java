@@ -6,6 +6,8 @@ import com.arka.homework.projectArka.Carrito.Domain.Repository.CarritoRepository
 import com.arka.homework.projectArka.CarritoProducto.Domain.Entity.CarritoProducto;
 import com.arka.homework.projectArka.CarritoProducto.Domain.Repository.CarritoProductoRepository;
 import com.arka.homework.projectArka.Categoria.Domain.Entity.Categoria;
+import com.arka.homework.projectArka.Cliente.Domain.Entity.Cliente;
+import com.arka.homework.projectArka.Cliente.Domain.Repository.ClienteRepository;
 import com.arka.homework.projectArka.Exception.GeneralException;
 import com.arka.homework.projectArka.Pedido.Domain.Entity.Pedido;
 import com.arka.homework.projectArka.Pedido.Domain.Repository.PedidoRepository;
@@ -22,6 +24,7 @@ import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,6 +46,9 @@ public class CarritoService {
 
     @Autowired
     CarritoProductoRepository carritoProductoRepository;
+
+    @Autowired
+    ClienteRepository clienteRepository;
 
     public List<Carrito> getAll(){
         return carritoRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -112,21 +118,39 @@ public class CarritoService {
 
 
     public Carrito save(CreateCarritoDto carritoDto){
-        //creacion del pedido
-        Optional<Pedido> pedidoOptional = pedidoRepository.findByReference(carritoDto.getPedido().getReference());
-        Pedido pedido;
-        if (pedidoOptional.isPresent()){
-            throw new GeneralException(ID_YA_EXISTE);
-        }else{
-            pedido = new Pedido();
-            BeanUtils.copyProperties(carritoDto.getPedido(), pedido);
-            pedido = pedidoRepository.save(pedido);
+        //1) buscar cliente y lo toma
+        Optional<Cliente> clienteOptional = clienteRepository.findById(carritoDto.getCliente().getId());
+        if(clienteOptional.isEmpty()){
+            throw new GeneralException(ID_NO_ENCONTRADO);
         }
-        //creacion del carrito
+        Cliente cliente = clienteOptional.get();
+
+        //Crea el objeto carrito y copiar las propiedades
         Carrito carrito = new Carrito();
-        BeanUtils.copyProperties(carrito, carrito);
-        carrito.setPedido(pedido);
-        return carritoRepository.save(carrito);
+        BeanUtils.copyProperties(carritoDto, carrito);
+        carrito.setCliente(cliente);
+
+        //Crea y agrega los productos al carrito
+        List<CarritoProducto> carritoProductosList = carritoDto.getCarritoProductos().stream()
+                .map(dto -> {
+                    CarritoProducto carritoProducto = new CarritoProducto();
+                    carritoProducto.setProducto(dto.getProducto());
+                    carritoProducto.setAmount(dto.getAmount());
+                    carritoProducto.setCarrito(carrito);
+                    return carritoProducto;
+                })
+                .collect(Collectors.toList());
+
+        carrito.setCarritoProductos(carritoProductosList);
+
+        // Guardar el carrito y los productos
+        Carrito savedCarrito = carritoRepository.save(carrito);
+
+        // Guardar los productos del carrito
+        carritoProductosList.forEach(carritoProductoRepository::save);
+
+        return savedCarrito;
+
     }
 
     public Carrito update(Long id,CreateCarritoDto carritoDto){

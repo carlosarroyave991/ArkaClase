@@ -1,5 +1,6 @@
 package com.arka.homework.projectArka.Carrito.Domain.Repository;
 
+import com.arka.homework.projectArka.Carrito.Aplication.Dto.CreateCarritoDto;
 import com.arka.homework.projectArka.Carrito.Domain.Entity.Carrito;
 import com.arka.homework.projectArka.CarritoProducto.Domain.Entity.CarritoProducto;
 import com.arka.homework.projectArka.Producto.Domain.Entity.Producto;
@@ -23,5 +24,4 @@ public interface CarritoRepository extends JpaRepository<Carrito, Long> {
     @Query("SELECT cp FROM CarritoProducto cp WHERE cp.carrito.id = :carritoId")
     List<CarritoProducto> listarProductos(@Param("carritoId") Long carritoId);
 
-    /*List<CarritoProducto> listarProductos(Long carritoId);*/
 }
