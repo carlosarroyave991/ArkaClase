@@ -91,13 +91,6 @@ public class Producto {
         this.stock = stock;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
 
     public List<CarritoProducto> getCarritoProductoList() {
         return carritoProductoList;
@@ -113,5 +106,13 @@ public class Producto {
 
     public void setProveedores(List<Proveedor> proveedores) {
         this.proveedores = proveedores;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }

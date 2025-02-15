@@ -24,7 +24,6 @@ public class Carrito {
 
     @OneToOne
     @JoinColumn(name = "cliente_id")
-    @JsonBackReference
     private Cliente cliente;
 
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

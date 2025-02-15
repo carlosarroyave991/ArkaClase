@@ -4,6 +4,8 @@ import com.arka.homework.projectArka.Categoria.Aplication.Dto.CreateCategoriaDto
 import com.arka.homework.projectArka.Categoria.Aplication.Service.CategoriaService;
 import com.arka.homework.projectArka.Categoria.Domain.Entity.Categoria;
 import com.arka.homework.projectArka.Exception.GeneralException;
+import com.arka.homework.projectArka.Producto.Aplication.Service.ProductoService;
+import com.arka.homework.projectArka.Producto.Controller.ProductosByCategoriaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ public class CategoriaController {
 
     @Autowired
     CategoriaService categoriaService;
+
+    @Autowired
+    ProductoService productoService;
 
     @GetMapping
     public List<Categoria> findAll() {
@@ -38,6 +43,16 @@ public class CategoriaController {
         } catch (GeneralException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    /**
+     * Obtiene todos los productos por el id de la categoria
+     * @param id obtiene el id de la categoria
+     * @return
+     */
+    @GetMapping("/{id}/productos")
+    public ResponseEntity<Optional<ProductosByCategoriaResponse>> getProductosByCategoria(@PathVariable("id")Long id){
+        return new ResponseEntity<>(productoService.getProductosByCategoria(id), HttpStatus.OK);
     }
 
     @PostMapping

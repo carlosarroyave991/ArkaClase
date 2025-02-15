@@ -6,6 +6,7 @@ import com.arka.homework.projectArka.Carrito.Domain.Entity.Carrito;
 import com.arka.homework.projectArka.CarritoProducto.Domain.Entity.CarritoProducto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class CarritoController {
         return new ResponseEntity<>(carritoService.findById(id), HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Carrito> save(
             @RequestBody CreateCarritoDto carritoDto
     ){

@@ -19,7 +19,7 @@ public class ProductoController {
     ProductoService productoService;
 
     @GetMapping()
-    public ResponseEntity<List<Producto>> getAllProductos() {
+    public ResponseEntity<List<ProductoResponse>> getAllProductos() {
         return new ResponseEntity<>(productoService.getAll(), HttpStatus.OK);
     }
 
@@ -33,8 +33,9 @@ public class ProductoController {
         return new ResponseEntity<>(productoService.findByName(name), HttpStatus.OK);
     }
 
+
     @PostMapping
-    public ResponseEntity<Producto> save(@RequestBody CreateProductoDto productoDto){
+    public ResponseEntity<ProductoResponse> save(@RequestBody CreateProductoDto productoDto){
         return new ResponseEntity<>(productoService.save(productoDto), HttpStatus.CREATED);
     }
 
